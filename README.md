@@ -8,14 +8,41 @@ Sestavljena je iz **zalednega (backend)** dela v **Spring Boot** in **odjemalneg
 
 ### Struktura projekta
 todo_app/
-|
-|--backend/ # Spring Boot aplikacija (Java, REST API, JPA)
-||--src/main/java/com.example.todo/
-|||--task
-|||--TodoApplication.java
-||--src/main/
-||--resources/
-|||-application
+│
+├─ backend/ # Spring Boot (REST API + JPA)
+│ ├─ src/
+│ │ ├─ main/
+│ │ │ ├─ java/com/example/todo/
+│ │ │ │ ├─ task/
+│ │ │ │ │ ├─ Task.java
+│ │ │ │ │ ├─ TaskController.java
+│ │ │ │ │ ├─ TaskRepository.java
+│ │ │ │ │ └─ TaskService.java
+│ │ │ │ └─ TodoApplication.java
+│ │ │ └─ resources/
+│ │ │ └─ application.properties
+│ │ └─ test/java/com/example/todo/TodoApplicationTests.java
+│ ├─ pom.xml
+│ ├─ mvnw / mvnw.cmd # Maven wrapper
+│ └─ .mvn/
+│
+├─ frontend/ # React (Vite)
+│ ├─ public/vite.svg
+│ ├─ src/
+│ │ ├─ assets/react.svg
+│ │ ├─ api.js
+│ │ ├─ App.jsx
+│ │ ├─ index.css
+│ │ └─ main.jsx
+│ ├─ package.json
+│ ├─ package-lock.json
+│ └─ vite.config.js
+│
+├─ db/
+│ └─ todo.sql # Ustvari bazo + uporabnika
+│
+├─ .gitignore
+└─ README.md
 
 ### Standardi kodiranja
 - **Backend:** Java 17+, Spring Boot 3, REST konvencije, JPA repository pattern.  
