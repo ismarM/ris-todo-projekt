@@ -23,3 +23,6 @@ dist/
 
 # Misc
 *.swp
+
+.idea/
+.DS_Store
