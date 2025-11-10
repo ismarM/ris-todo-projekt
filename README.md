@@ -101,12 +101,6 @@ todo_app/
 3. Zaženi `TodoApplication.java` (Run).  
    Aplikacija posluša na: `http://localhost:8080`.
 
-**CLI (alternativa):**
-```bash
-cd backend
-./mvnw spring-boot:run
-```
-
 ---
 
 ### Frontend (React + Vite)
