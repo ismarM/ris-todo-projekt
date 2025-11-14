@@ -141,6 +141,13 @@ git push origin main
 
 ---
 
+## 4) Vizija projekta
+Vizija projekta ToDo App je razviti preprosto, pregledno in uporabniku prijazno rešitev za upravljanje opravil. Aplikacija omogoča dodajanje, urejanje, brisanje in pregledovanje nalog ter ponuja filtriranje po datumu, kar uporabniku pomaga pri boljšem načrtovanju obveznosti in ohranjanju pregleda nad časom.
+
+Glavni cilj aplikacije je zmanjšati zmedo pri spremljanju nalog ter ponuditi orodje, ki ga lahko uporabniki brez težav uporabljajo vsak dan. Namenjena je študentom, profesorjem in vsem, ki želijo imeti bolj organiziran pregled nad svojimi opravki. Z razvojem želimo pokazati, kako lahko spletne tehnologije na preprost način izboljšajo osebno produktivnost in organiziranost. 
+
+---
+
 ## Avtorji ekipe
 - Ismar Mujezinović  
 - Ana Cvetko  
