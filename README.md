@@ -148,6 +148,25 @@ Glavni cilj aplikacije je zmanjšati zmedo pri spremljanju nalog ter ponuditi or
 
 ---
 
+## 5) Besednjak
+
+| Izraz | Pomen |
+|-------|-------|
+| **Opravilo (Task)** | Posamezna naloga, ki jo uporabnik doda v aplikacijo. |
+| **Naslov opravila** | Kratek opis opravila, prikazan v seznamu. |
+| **Opis opravila** | Dodatni podatki ali opombe o opravilu. |
+| **Datum opravila** | Datum, do katerega naj bo opravilo opravljeno. Po tem datumu je možno tudi filtriranje. |
+| **Filtriranje po datumu** | Prikaz samo tistih opravil, ki ustrezajo izbranemu datumu. |
+| **Status opravila** | Označuje, ali je opravilo opravljeno (checkbox). |
+| **CRUD** | Osnovne operacije nad podatki: Create, Read, Update, Delete. |
+| **Frontend** | Del aplikacije, s katerim uporabnik neposredno upravlja (React). |
+| **Backend** | Del aplikacije, ki obdeluje podatke in komunicira z bazo (Spring Boot). |
+| **API** | Vmesnik, preko katerega frontend in backend izmenjujeta podatke. |
+| **REST API** | API, ki uporablja HTTP metode (GET, POST, PUT, DELETE) za delo z opravilom. |
+| **Podatkovna baza** | Shranjuje vsa opravila aplikacije (MySQL/MariaDB). |
+
+---
+
 ## Avtorji ekipe
 - Ismar Mujezinović  
 - Ana Cvetko  
