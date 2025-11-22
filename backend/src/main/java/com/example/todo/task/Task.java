@@ -32,6 +32,16 @@ public class Task {
 
     private LocalDate dueDate;
 
+    @Column(length = 20)
+    private String difficulty = "Medium";
+
+    @PrePersist
+    public void onCreate() {
+        if (difficulty == null || difficulty.isBlank()) {
+            difficulty = "Medium";
+        }
+    }
+
 //    private LocalDateTime createdAt = LocalDateTime.now();
 //
 //    private LocalDateTime updatedAt = LocalDateTime.now();
@@ -75,6 +85,8 @@ public class Task {
     public void setDueDate(LocalDate dueDate) {
         this.dueDate = dueDate;
     }
+    public String getDifficulty() { return difficulty; }
+    public void setDifficulty(String difficulty) { this.difficulty = difficulty; }
 
 
 //    public LocalDateTime getCreatedAt() {

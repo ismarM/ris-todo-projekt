@@ -47,6 +47,7 @@ public class TaskService {
         t.setDone(updatedTask.isDone());
         t.setDescription(updatedTask.getDescription());
         t.setDueDate(updatedTask.getDueDate());
+        t.setDifficulty(updatedTask.getDifficulty());
         return repository.save(t);                          // shranijo spremembe v bazo
     }
 

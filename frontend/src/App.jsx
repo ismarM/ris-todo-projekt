@@ -6,6 +6,7 @@ function App() {
     const [tasks, setTasks] = useState([]);
     const [newTask, setNewTask] = useState("");
     const [newDesc, setNewDesc] = useState("");
+    const [newDifficulty, setNewDifficulty] = useState("Medium");
 
     // const [newDueDate, setNewDueDate] = useState("");
     // ob zagonu aplikacije input type="date" že imel današnji datum
@@ -27,12 +28,50 @@ function App() {
         return `${String(day).padStart(2, "0")}. ${String(m).padStart(2, "0")}. ${y}`;
     }
 
+    function daysLeft(dueDate) {
+        if (!dueDate) return null;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const due = new Date(dueDate);
+        due.setHours(0, 0, 0, 0);
+
+        const diffMs = due - today;
+        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+        let label;
+        let cssClass;
+
+        if (diffDays < 0) {
+            label = "Overdue!";
+            cssClass = "deadline-badge overdue";
+        } else if (diffDays === 0) {
+            label = "Today!";
+            cssClass = "deadline-badge today";
+        } else if (diffDays === 1) {
+            label = "Tomorrow!";
+            cssClass = "deadline-badge tomorrow";
+        } else if (diffDays <= 3) {
+            label = `${diffDays} days left`;
+            cssClass = "deadline-badge soon";
+        } else {
+            label = `${diffDays} days left`;
+            cssClass = "deadline-badge normal";
+        }
+
+        return { diffDays, label, cssClass }
+    }
+
+
+
     const [filterDate, setFilterDate] = useState("");
 
     const [editId, setEditId] = useState(null);
     const [editTitle, setEditTitle] = useState("");
     const [editDesc, setEditDesc] = useState("");
     const [editDueDate, setEditDueDate] = useState("");
+    const [editDifficulty, setEditDifficulty] = useState("Medium");
 
 
 // PREBERI VSE (ob zagonu)
@@ -55,12 +94,14 @@ function App() {
             title: t,
             description: newDesc || "",
             dueDate: newDueDate || null,  // <-- uporabi state (ISO yyyy-mm-dd je OK za LocalDate)
+            difficulty: newDifficulty,
             done: false,
         });
 
         // reseti
         setNewTask("");
         setNewDesc("");
+        setNewDifficulty("Medium");
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, "0");
@@ -76,6 +117,7 @@ function App() {
             title: task.title,
             description: task.description ?? "",
             dueDate: task.dueDate ?? null,
+            difficulty: task.difficulty ?? "Medium",
             done: !task.done,
         });
         loadTasks();
@@ -94,6 +136,9 @@ function App() {
         setEditTitle(task.title ?? "");
         setEditDesc(task.description ?? "");
         setEditDueDate(task.dueDate ?? "");
+        setEditDifficulty(task.difficulty || "Medium")
+        console.log("task.difficulty = ", task.difficulty);
+
     }
 
     // prekliči urejanje
@@ -102,6 +147,7 @@ function App() {
         setEditTitle("");
         setEditDesc("");
         setEditDueDate("");
+        setEditDifficulty("Medium");
     }
 
     // shrani (PUT) – posodobimo samo title, ostalo nespremenjeno
@@ -113,6 +159,7 @@ function App() {
             title,
             description: editDesc,
             dueDate: editDueDate || null,
+            difficulty: editDifficulty,
             done: task.done,
         });
 
@@ -154,6 +201,14 @@ function App() {
                         value={newDueDate}
                         onChange={(e) => setNewDueDate(e.target.value)}
                     />
+                    <select
+                        value={newDifficulty}
+                        onChange={(e) => setNewDifficulty(e.target.value)}
+                    >
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
                     <button className="btn primary" onClick={addTask} disabled={!newTask.trim()}>Add</button>
 
 
@@ -201,6 +256,14 @@ function App() {
                                                 value={editDueDate}
                                                 onChange={(e) => setEditDueDate(e.target.value)}
                                             />
+                                            <select
+                                                value={editDifficulty}
+                                                onChange={(e) => setEditDifficulty(e.target.value)}
+                                            >
+                                                <option value="Low">Low</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="High">High</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -225,11 +288,51 @@ function App() {
                                     <div className="task-info">
                                         <span className={`text ${task.done ? "done" : ""}`}>{task.title}</span>
                                         <div className="details">
-                                            {task.dueDate && <small>🗓 {formatDate(task.dueDate)}</small>}
-                                            <br/>
-                                            {task.dueDate && task.description ? <small> · </small> : null}
-                                            {task.description && <small>{task.description}</small>}
-                                        </div>
+                                            {/* PRVA VRSTICA: difficulty + days left */}
+                                            <div className="details-top-row">
+                                                {(() => {
+                                                const difficulty = task.difficulty || "Medium";
+                                                const diffClass =
+                                                    difficulty === "Low"
+                                                    ? "difficulty-low"
+                                                    : difficulty === "High"
+                                                    ? "difficulty-high"
+                                                    : "difficulty-medium";
+
+                                                return (
+                                                    <span className={`difficulty-badge ${diffClass}`}>
+                                                    {difficulty}
+                                                    </span>
+                                                );
+                                                })()}
+
+                                                {task.dueDate && !task.done && (() => {
+                                                const info = daysLeft(task.dueDate);
+                                                if (!info) return null;
+
+                                                return (
+                                                    <span className={info.cssClass}>
+                                                    {info.label}
+                                                    </span>
+                                                );
+                                                })()}
+                                            </div>
+
+                                            {/* DRUGA VRSTICA: datum */}
+                                            {task.dueDate && (
+                                                <div className="details-date">
+                                                <small>🗓 {formatDate(task.dueDate)}</small>
+                                                </div>
+                                            )}
+
+                                            {/* TRETJA VRSTICA: opis */}
+                                            {task.description && (
+                                                <div className="details-desc">
+                                                <small>{task.description}</small>
+                                                </div>
+                                            )}
+                                            </div>
+
                                     </div>
                                 </div>
 
