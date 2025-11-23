@@ -169,7 +169,7 @@ Glavni cilj aplikacije je zmanjšati zmedo pri spremljanju nalog ter ponuditi or
 
 ## 6) Diagram primerov uporabe
 
-![DPU Diagram](dpu.png)
+![DPU Diagram](dpu.jpg)
 
 ---
 
