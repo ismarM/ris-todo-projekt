@@ -173,9 +173,9 @@ Glavni cilj aplikacije je zmanjšati zmedo pri spremljanju nalog ter ponuditi or
 
 ---
 
-![Class Diagram](class-diagram.png)
-
 ## 7) Razredni diagram
+
+![Class Diagram](class-diagram.png)
 
 ### Opis razredov
 
