@@ -173,7 +173,61 @@ Glavni cilj aplikacije je zmanjšati zmedo pri spremljanju nalog ter ponuditi or
 
 ---
 
-## Avtorji ekipe
+![Class Diagram](class-diagram.png)
+
+## 7) Razredni diagram
+
+### Opis razredov
+
+- **Uporabnik**
+  - Predstavlja registriranega uporabnika aplikacije.
+  - Hrani osnovne podatke (ime, priimek, email, geslo) in seznam opravil.
+  - Ključne metode:
+    - `dodajOpravilo`, `urediOpravilo`, `izbrisiOpravilo` – osnovni CRUD nad opravili.
+    - `filtrirajOpravilaPoDatumu`, `filtrirajOpravilaPoNujnosti` – podpora funkcionalnostim filtriranja.
+   
+- **Opravilo**
+  - Predstavlja eno opravilo v to-do seznamu.
+  - Atributi: `naziv`, `opis`, `rok`, `dokončano`, `nujnost` (enum `Nujnost`), `opomnikVklopljen`.
+  - Ključne metode:
+     - `nastaviRok`, `nastaviStatus` – urejanje opravila.
+     - `nastaviOpomnik` – vklop/izklop e-mail opomnika.
+     - `dodajOpombo` – povezava na razred `Opomba`.
+      
+- **Nujnost**
+  - Določa težavnost/importantnost opravila: `NIZKA`, `SREDNJA`, `VISOKA`.
+  - Uporablja se pri prikazu in pri prioriteti nalog.
+
+- **Opomba**
+  - Dodatno besedilo, vezano na eno opravilo.
+  - Uporabnik lahko k istemu opravilu doda nič ali več opomb.
+
+- **Obvestilo**
+  - Predstavlja opomnik za opravilo (npr. e-mail dan pred rokom).
+  - Atributi: `vsebina`, `casPosiljanja`, `poslano`.
+  - Ključne metode:
+     - `pripraviZaOpravilo` - na osnovi opravila nastavi čas pošiljanja.
+     - `posljiEmail` - pošlje opomnik uporabniku.
+
+- **AnalitikaOpravil**
+  - Hrani agregirane statistike za uporabnikova opravila po mesecih.
+  - Atributi: `mesec`, `leto`, `stSkupno`, `stDokoncanih`, `stNedokoncanih`, `stZapadelih`.
+  - Ključna metoda:
+     - `izracunajZa(uporabnik)` - izračuna statistiko na podlagi seznamov opravil.
+
+- **Administrator**
+  - Poseben tip uporabnika, ki lahko upravlja uporabnike.
+  - Metode: `dodajUporabnika`, `spremeniUporabnika`, `izbrisiUporabnika`.
+ 
+- **TaskController / TaskService / TaskRepository**
+  - Sloj za komunikacijo med frontendom in bazo (Spring Boot).
+  - `TaskController` sprejema HTTP zahteve.
+  - `TaskService` implementira poslovno logiko (npr. `createTask`, `findAll`, `nadjiOpravilaZOpomnikiZaJutri`).
+  - `TaskRepository` komunicira z bazo preko Spring Data JPA.
+
+---
+
+## Ekipa
 - Ismar Mujezinović  
 - Ana Cvetko  
 - Živa Šumak
