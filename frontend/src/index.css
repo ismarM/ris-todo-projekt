@@ -155,3 +155,35 @@ input[type="text"]:focus, input[type="date"]:focus, textarea:focus {
   background: #d0ebff;
   color: #1864ab;
 }
+
+.reminder-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #444;
+}
+
+.reminder-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.details-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.reminder-badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff7e6;          /* svetlo oranžna /
+  color: #b96b00;               / temno oranžna */
+  border: 1px solid #ffd29b;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

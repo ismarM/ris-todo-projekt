@@ -8,6 +8,11 @@ function App() {
     const [newDesc, setNewDesc] = useState("");
     const [newDifficulty, setNewDifficulty] = useState("Medium");
 
+    const [newEmail, setNewEmail] = useState("");
+    const [newReminderEnabled, setNewReminderEnabled] = useState(false);
+    const [editEmail, setEditEmail] = useState("");
+    const [editReminderEnabled, setEditReminderEnabled] = useState(false);
+
     // const [newDueDate, setNewDueDate] = useState("");
     // ob zagonu aplikacije input type="date" že imel današnji datum
     const [newDueDate, setNewDueDate] = useState(() => {
@@ -17,8 +22,6 @@ function App() {
         const dd = String(today.getDate()).padStart(2, "0");
         return `${yyyy}-${mm}-${dd}`;
     });
-
-
 
     // helper za lep prikaz datuma
     function formatDate(d) {
@@ -64,7 +67,6 @@ function App() {
     }
 
 
-
     const [filterDate, setFilterDate] = useState("");
 
     const [editId, setEditId] = useState(null);
@@ -95,6 +97,8 @@ function App() {
             description: newDesc || "",
             dueDate: newDueDate || null,  // <-- uporabi state (ISO yyyy-mm-dd je OK za LocalDate)
             difficulty: newDifficulty,
+            email: newEmail || null,
+            reminderEnabled: newReminderEnabled,
             done: false,
         });
 
@@ -102,6 +106,8 @@ function App() {
         setNewTask("");
         setNewDesc("");
         setNewDifficulty("Medium");
+        setNewEmail("");
+        setNewReminderEnabled(false);
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, "0");
@@ -118,6 +124,8 @@ function App() {
             description: task.description ?? "",
             dueDate: task.dueDate ?? null,
             difficulty: task.difficulty ?? "Medium",
+            email: task.email ?? null,
+            reminderEnabled: task.reminderEnabled ?? false,
             done: !task.done,
         });
         loadTasks();
@@ -137,8 +145,9 @@ function App() {
         setEditDesc(task.description ?? "");
         setEditDueDate(task.dueDate ?? "");
         setEditDifficulty(task.difficulty || "Medium")
+        setEditEmail(task.email || "");
+        setEditReminderEnabled(task.reminderEnabled ?? false);
         console.log("task.difficulty = ", task.difficulty);
-
     }
 
     // prekliči urejanje
@@ -148,6 +157,8 @@ function App() {
         setEditDesc("");
         setEditDueDate("");
         setEditDifficulty("Medium");
+        setEditEmail("");
+        setEditReminderEnabled(false);
     }
 
     // shrani (PUT) – posodobimo samo title, ostalo nespremenjeno
@@ -159,6 +170,8 @@ function App() {
             title,
             description: editDesc,
             dueDate: editDueDate || null,
+            email: editEmail || null,
+            reminderEnabled: editReminderEnabled,
             difficulty: editDifficulty,
             done: task.done,
         });
@@ -196,6 +209,20 @@ function App() {
                         value={newDesc}
                         onChange={(e) => setNewDesc(e.target.value)}
                     />
+                    <input
+                        type="email"
+                        placeholder="E-pošta za opomnik (neobvezno)"
+                        value={newEmail}
+                        onChange={(e) => setNewEmail(e.target.value)}
+                    />
+                    <label className="reminder-row">
+                        <input
+                            type="checkbox"
+                            checked={newReminderEnabled}
+                            onChange={(e) => setNewReminderEnabled(e.target.checked)}
+                        />
+                        <span>Pošlji opomnik dan pred rokom</span>
+                    </label>
                     <input
                         type="date"
                         value={newDueDate}
@@ -264,6 +291,22 @@ function App() {
                                                 <option value="Medium">Medium</option>
                                                 <option value="High">High</option>
                                             </select>
+                                            <input
+                                                type="email"
+                                                value={editEmail}
+                                                onChange={(e) => setEditEmail(e.target.value)}
+                                                placeholder="E-pošta za opomnik (neobvezno)"
+                                            />
+                                            <label className="reminder-row">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={editReminderEnabled}
+                                                    onChange={(e) =>
+                                                        setEditReminderEnabled(e.target.checked)
+                                                    }
+                                                />
+                                                <span>Pošlji opomnik dan pred rokom</span>
+                                            </label>
                                         </div>
                                     </div>
 
@@ -286,7 +329,7 @@ function App() {
                                     />
 
                                     <div className="task-info">
-                                        <span className={`text ${task.done ? "done" : ""}`}>{task.title}</span>
+                                    <span className={`text ${task.done ? "done" : ""}`}>{task.title}</span>
                                         <div className="details">
                                             {/* PRVA VRSTICA: difficulty + days left */}
                                             <div className="details-top-row">
@@ -318,17 +361,23 @@ function App() {
                                                 })()}
                                             </div>
 
-                                            {/* DRUGA VRSTICA: datum */}
+                                            {/* DRUGA VRSTICA: datum + opomnik*/}
                                             {task.dueDate && (
                                                 <div className="details-date">
-                                                <small>🗓 {formatDate(task.dueDate)}</small>
+                                                    <small>🗓 {formatDate(task.dueDate)}</small>
+
+                                                    {task.reminderEnabled && task.email && (
+                                                        <span className="reminder-badge">
+                                                        🔔 Opomnik na: {task.email}
+                                                    </span>
+                                                    )}
                                                 </div>
                                             )}
 
                                             {/* TRETJA VRSTICA: opis */}
                                             {task.description && (
                                                 <div className="details-desc">
-                                                <small>{task.description}</small>
+                                                    <small>{task.description}</small>
                                                 </div>
                                             )}
                                             </div>
