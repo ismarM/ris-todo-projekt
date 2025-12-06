@@ -35,6 +35,15 @@ public class Task {
     @Column(length = 20)
     private String difficulty = "Medium";
 
+    @Column(length=255)
+    private String email;
+
+    @Column(nullable = false)
+    private boolean reminderEnabled = false;
+
+    @Column(nullable = false)
+    private boolean reminderSent = false;
+
     @PrePersist
     public void onCreate() {
         if (difficulty == null || difficulty.isBlank()) {
@@ -87,6 +96,24 @@ public class Task {
     }
     public String getDifficulty() { return difficulty; }
     public void setDifficulty(String difficulty) { this.difficulty = difficulty; }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public boolean isReminderEnabled() {
+        return reminderEnabled;
+    }
+    public void setReminderEnabled(boolean reminderEnabled) {
+        this.reminderEnabled = reminderEnabled;
+    }
+    public boolean isReminderSent() {
+        return reminderSent;
+    }
+    public void setReminderSent(boolean reminderSent) {
+        this.reminderSent = reminderSent;
+    }
 
 
 //    public LocalDateTime getCreatedAt() {

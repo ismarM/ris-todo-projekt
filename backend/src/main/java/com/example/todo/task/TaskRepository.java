@@ -14,5 +14,9 @@ Zakaj čisto kratek: Spring Data JPA sama implementira te metode.
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     // vrne vse taske z točno tem dueDate
-    List<Task> findByDueDate(LocalDate dueDate);                                // filtriranje: metoda, ki zna poiskati po datumu
+    List<Task> findByDueDate(LocalDate dueDate);
+    // filtriranje: metoda, ki zna poiskati po datumu
+
+    //za iskanje taskov, ki potrebujejo opomnik
+    List<Task> findByReminderEnabledTrueAndReminderSentFalseAndDoneFalseAndDueDate(LocalDate dueDate);
 }

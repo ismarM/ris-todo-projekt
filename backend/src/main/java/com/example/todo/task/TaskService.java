@@ -6,19 +6,26 @@ Service sloj ni nujen, a je dobra praksa: controller samo “sprejme HTTP”, se
 Tukaj pripravimo čist CRUD tok: create(t), findAll(), findOne(id), update(id, payload), delete(id).
 */
 
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@EnableScheduling
 @Service
 public class TaskService {
 
     private final TaskRepository repository;
+    private final JavaMailSender mailSender;
 
 // konstruktor
-    public TaskService(TaskRepository repository) {
+    public TaskService(TaskRepository repository, JavaMailSender mailSender) {
         this.repository = repository;
+        this.mailSender = mailSender;
     }
 
 
@@ -48,6 +55,8 @@ public class TaskService {
         t.setDescription(updatedTask.getDescription());
         t.setDueDate(updatedTask.getDueDate());
         t.setDifficulty(updatedTask.getDifficulty());
+        t.setEmail(updatedTask.getEmail());
+        t.setReminderEnabled(updatedTask.isReminderEnabled());
         return repository.save(t);                          // shranijo spremembe v bazo
     }
 
@@ -55,4 +64,40 @@ public class TaskService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    @Scheduled(cron = "0 * * * * *")
+    public void sendTomorrowReminders() {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+
+        List<Task> tasks = repository.findByReminderEnabledTrueAndReminderSentFalseAndDoneFalseAndDueDate(tomorrow);
+
+        for (Task t : tasks) {
+            String email = t.getEmail();
+            if (email == null || email.isBlank()) {
+                continue;
+            }
+
+            SimpleMailMessage msg = new SimpleMailMessage();
+            msg.setTo(email);
+            msg.setSubject("Opomnik na opravilo: " + t.getTitle());
+            msg.setText("""
+                    Pozdravljen/a,
+
+                    Opomnik: jutri (%s) imaš rok za opravilo:
+
+                    %s
+
+                    Lep pozdrav,
+                    ToDo aplikacija
+                    """.formatted(t.getDueDate(), t.getTitle()));
+
+            mailSender.send(msg);
+
+            t.setReminderSent(true);          // da ne pošljemo ponovno
+            repository.save(t);
+
+            System.out.println("[REMINDER] Poslan opomnik na " + email + " za task " + t.getId());
+        }
+    }
+
 }
