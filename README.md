@@ -227,6 +227,70 @@ Glavni cilj aplikacije je zmanjšati zmedo pri spremljanju nalog ter ponuditi or
 
 ---
 
+## 8) Nova funkcionalnost: Prejemanje obvestil o približevanju roka opravila
+Implementirali smo napredni reminder sistem oz. sistem opomnikov, ki uporabnika samodejno opozori na prihajajoče roke opravil. Ta vključuje:
+  - frontend UI podporo,
+  - nove entitete in polja v backendu,
+  - cron urnik za avtomatsko pošiljanje,
+  - realno pošiljanje e-pošte preko SMTP (MailTrap),
+  - preprečitev podvajanja opomnikov.
+
+Ta funkcionalnost razširi aplikacijo iz navadnega "to-do" seznama v realno uporabno orodje za upravljanje z roki.
+Funkcionalnost je popolna, testirana in pripravljena za nadaljnje razširitve.
+
+**Kako funkcionalnost deluje:**
+1. Vnos podatkov na frontendu
+Pri ustvarjanju ali urejanju opravila lahko uporabnik določi:
+  - e-poštni naslov, na katerega želi prejemati opomnike,
+  - možnost »Pošlji opomnik dan pred rokom«,
+  - datum roka (dueDate).
+
+Ko uporabnik shrani opravilo, frontend vse te informacije pošlje backendu prek API-ja. V uporabniškem vmesniku je jasno prikazano, ali je opomnik za posamezno opravilo vklopljen ali ne.
+
+2. Logika delovanja v backendu
+Da bi opomniki delovali samodejno, so bili na backendu dodani novi atributi:
+  - email – naslov za prejemanje opomnikov,
+  - reminderEnabled – označuje, ali ima opravilo vklopljen opomnik,
+  - reminderSent – prepreči, da bi se opomnik poslal dvakrat.
+
+Poleg CRUD funkcionalnosti, aplikacija uporablja tudi urnik (scheduler).
+
+Cron se za potrebe testiranja izvaja vsako minuto. Ob vsakem zagonu scheduler:
+  - poišče vsa opravila, ki imajo rok jutri,
+  - preveri, ali je opomnik za opravilo vklopljen,
+  - preveri, ali opomnik še ni bil poslan (reminderSent == false),
+  - pošlje e-poštno obvestilo preko MailTrap SMTP,
+  - nastavi reminderSent = true,
+  - zapiše log o poslani pošti.
+
+Na ta način aplikacija zagotavlja, da nobeno opravilo ne prejme opomnika dvakrat.
+
+3. Vsebina e-poštnega opomnika
+Sporočilo, ki ga uporabnik prejme, vsebuje:
+  - prijazen pozdrav,
+  - datum roka,
+  - naslov opravila,
+  - podpis aplikacije.
+
+Ker se uporablja MailTrap, se pošta prikaže v njihovem testnem »Inboxu«.
+
+**Uporaba funkcionalnosti:**
+Najprej uporabnik v aplikaciji odpre obrazec za dodajanje novega opravila. V obrazec vnese vse standardne podatke, kot so naslov, opis in težavnost.
+Pri ustvarjanju ali urejanju opravila izpolni še nova polja, ki so del funkcionalnosti opomnikov:
+  - e-poštni naslov, kamor želi prejemati opomnik,
+  - označi »Pošlji opomnik dan pred rokom«, s čimer vklopi opomnik,
+  - datum roka.
+Ko vse izpolni, klikne Dodaj opravilo.
+Uporabnik odpre svoj MailTrap račun, izbere zavihek Inbox in počaka. V »Inboxu« se 1 dan pred rokom opravila prikaže novo e-poštno sporočilo, ki vsebuje opomnik na jutrišnji rok opravila.
+
+Uporabnik lahko preveri tudi delovanje na UI:
+  - ob opravilu se vidi, ali je opomnik vklopljen,
+  - prikaže se badge »Tomorrow!«, »Today!«, »Overdue!« ali »X days left«,
+  - opravilo vsebuje vse nove vnose (e-pošta, rok, status opomnika).
+
+
+---
+
 ## Ekipa
 - Ismar Mujezinović  
 - Ana Cvetko  
