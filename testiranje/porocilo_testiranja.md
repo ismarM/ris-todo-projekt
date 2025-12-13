@@ -80,15 +80,54 @@ Vsi testi uspešno izvajajo, kar potrjujejo:
 
 ### Živa - Unit testi (FILTER + CREATE)
 
-#### 1. Test: 
+#### 1. Test: Dodajanje novega opravila (CREATE)
+
+**Razred:** `TaskServiceCreateTest`
+
+- **Pozitiven scenarij**  
+  Testna metoda `create_shouldSaveTask` preverja, ali metoda `create()` v razredu `TaskService` pravilno shrani novo opravilo v repozitorij in vrne shranjen objekt.
+
+  Test potrdi, da:
+  - se metoda `save()` na repozitoriju pokliče natanko enkrat,
+  - metoda `create()` vrne shranjen objekt opravila,
+  - se osnovni podatki opravila (npr. naslov) pravilno ohranijo.
+
+- **Negativen scenarij**
+  Negativni scenarij za to funkcionalnost v servisnem sloju ni smiseln, saj metoda `create()` ne vsebuje dodatne validacijske ali pogojne logike, temveč zgolj posreduje klic repozitoriju.
+
+  Test je pomemben, ker potrjuje osnovno funkcionalnost dodajanja opravil, ki predstavlja temelj celotne aplikacije.
 
 ---
 
-#### 2. Test: 
+#### 2. Test: Filtriranje opravil po datumu (FILTER)
+
+**Razred:** `TaskServiceFilterTest`
+
+- **Pozitiven scenarij**  
+  Test `findAll_withDate_shouldFilterByDueDate` preverja pravilno delovanje filtriranja opravil po datumu roka.
+
+  Test zagotavlja, da:
+  - se ob podanem datumu uporabi metoda `findByDueDate(dueDate)`,
+  - sistem vrne samo opravila z izbranim datumom,
+  - filtriranje deluje pravilno glede na vhodne parametre.
+
+- **Negativen scenarij**  
+  Test `findAll_withoutDate_shouldReturnAllTasks` preverja obnašanje sistema, kadar datum ni podan (`null`).
+
+  V tem primeru test preveri, da:
+  - se uporabi metoda `findAll()`,
+  - aplikacija vrne celoten seznam opravil,
+  - sistem deluje pravilno tudi brez aktivnega filtra.
+
+  S tem je zagotovljeno pravilno delovanje aplikacije v pogostih realnih primerih uporabe.
 
 ---
 
 #### Analiza uspešnosti testiranja
+
+Vsi testi so bili uspešno izvedeni z ukazom `./mvnw test`. Med pisanjem in izvajanjem testov nisem zaznala napak v obstoječi implementaciji.
+
+Unit testi potrjujejo pravilno delovanje funkcionalnosti dodajanja opravil in filtriranja po datumu ter omogočajo varnejše nadaljnje spremembe kode brez tveganja za nenamerne napake.
 
 ---
 
