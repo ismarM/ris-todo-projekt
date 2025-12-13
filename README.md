@@ -11,7 +11,7 @@ Sestavljena je iz **zalednega (backend)** dela v **Spring Boot** in **odjemalneg
 ```
 todo_app/
 │
-├─ backend/                        # Spring Boot (REST API + JPA)
+├─ backend/                              # Spring Boot (REST API + JPA)
 │  ├─ src/
 │  │  ├─ main/
 │  │  │  ├─ java/com/example/todo/
@@ -23,15 +23,24 @@ todo_app/
 │  │  │  │  └─ TodoApplication.java
 │  │  │  └─ resources/
 │  │  │     └─ application.properties
-│  │  └─ test/java/com/example/todo/TodoApplicationTests.java
+│  │  │
+│  │  └─ test/
+│  │     └─ java/com/example/todo/
+│  │        ├─ TodoApplicationTests.java
+│  │        └─ task/
+│  │           ├─ TaskServiceUpdateTest.java       # Unit testi za UPDATE
+│  │           └─ TaskServiceReminderTest.java     # Unit testi za REMINDER
+│  │
 │  ├─ pom.xml
-│  ├─ mvnw / mvnw.cmd              # Maven wrapper
+│  ├─ mvnw / mvnw.cmd                    # Maven wrapper
 │  └─ .mvn/
 │
-├─ frontend/                       # React (Vite)
-│  ├─ public/vite.svg
+├─ frontend/                             # React (Vite)
+│  ├─ public/
+│  │  └─ vite.svg
 │  ├─ src/
-│  │  ├─ assets/react.svg
+│  │  ├─ assets/
+│  │  │  └─ react.svg
 │  │  ├─ api.js
 │  │  ├─ App.jsx
 │  │  ├─ index.css
@@ -41,7 +50,10 @@ todo_app/
 │  └─ vite.config.js
 │
 ├─ db/
-│  └─ todo.sql                     # Ustvari bazo + uporabnika
+│  └─ todo.sql                           # SQL skripta za bazo
+│
+├─ testiranje/
+│  └─ porocilo_testiranja.md             # Poročilo o unit testiranju
 │
 ├─ .gitignore
 └─ README.md
@@ -288,6 +300,17 @@ Uporabnik lahko preveri tudi delovanje na UI:
   - prikaže se badge »Tomorrow!«, »Today!«, »Overdue!« ali »X days left«,
   - opravilo vsebuje vse nove vnose (e-pošta, rok, status opomnika).
 
+
+---
+
+## 9) Testiranje
+
+V projektu smo dodali unit teste za zaledje aplikacije, ki preverjajo pravilno delovanje ključnih funkcionalnosti (CRUD operacije in e-poštni opomniki).
+
+Testi se nahajajo v mapi `src/test/java`, poročilo o testiranju pa v mapi `testiranje/porocilo_testiranja.md`, kjer je opisano:
+- katere teste je razvil posamezen član ekipe,
+- kaj posamezni testi preverjajo,
+- kakšne napake so bile odkrite in odpravljene.
 
 ---
 
