@@ -133,15 +133,68 @@ Unit testi potrjujejo pravilno delovanje funkcionalnosti dodajanja opravil in fi
 
 ### Ana - Unit testi (READ + DELETE)
 
-#### 1. Test: 
+#### 1. Test: Branje opravil (READ)
+
+**Razred:** `TaskServiceReadTest`
+
+- **Pozitiven scenarij**  
+Testna metoda findOne_shouldReturnTask_whenTaskExists preverja, ali metoda findOne(id) pravilno vrne opravilo, kadar to obstaja v podatkovnem repozitoriju.
+
+Test zagotavlja, da:
+- se metoda findById(id) na repozitoriju pokliče,
+- vrnjeni objekt ni null,
+- imajo podatki opravila (npr. naziv) pričakovane vrednosti.
+
+Ta test je pomemben, ker potrjuje pravilno delovanje osnovnega branja posameznega opravila, kar je ključno za prikaz podrobnosti opravila v uporabniškem vmesniku.
+
+- **Negativen scenarij**  
+Testna metoda findOne_shouldThrowException_whenTaskDoesNotExist preverja obnašanje sistema, kadar opravilo z določenim ID-jem ne obstaja.
+
+V tem primeru test preveri, da:
+- metoda findOne(id) vrže izjemo RuntimeException,
+- sistem ne vrne neveljavnih ali praznih podatkov,
+- je napaka ustrezno zaznana in obravnavana.
+
+Ta test je pomemben za zagotavljanje varnega obnašanja sistema in preprečevanje tihega vračanja napačnih podatkov.
+
+- **Dodatni test: READ ALL** 
+Test findAll_shouldReturnAllTasks_whenNoDateFilter preverja, da metoda findAll(null) brez podanega filtra pravilno vrne vsa opravila iz repozitorija.
+
+S tem je zagotovljeno pravilno delovanje branja seznama opravil v primerih, ko filtriranje ni uporabljeno.
 
 ---
 
-#### 2. Test:
+#### 2. Test: Brisanje opravil (DELETE)
+
+**Razred:** `TaskServiceDeleteTest`
+
+- **Pozitiven scenarij**  
+Testna metoda delete_shouldCallRepositoryDeleteById preverja, ali metoda delete(id) pravilno pokliče metodo deleteById(id) na repozitoriju.
+
+Test zagotavlja, da:
+- se metoda deleteById(id) izvede natanko enkrat,
+- sistem pravilno delegira brisanje opravila repozitoriju,
+- med izvajanjem ne pride do napak.
+
+Ta test je pomemben, saj zagotavlja, da se opravila dejansko odstranijo iz sistema, kar je ključno za pravilno upravljanje seznama opravil.
+
+- **Negativen scenarij**  
+Testna metoda delete_shouldNotThrowException_whenTaskDoesNotExist preverja obnašanje sistema v primeru, ko se poskuša izbrisati opravilo z neobstoječim ID-jem.
+
+Test potrjuje, da:
+- metoda delete(id) ne vrže izjeme,
+- sistem ostane stabilen tudi v primeru neveljavnega vhoda,
+- aplikacija pravilno obravnava robne primere.
+
+Ta test je pomemben za zagotavljanje robustnosti aplikacije in preprečevanje nepričakovanih napak v produkcijskem okolju.
 
 ---
 
 #### Analiza uspešnosti testiranja
+
+Med razvojem unit testov za READ in DELETE funkcionalnosti večjih napak v implementaciji nisem zaznala. Testi so potrdili, da servisni sloj pravilno obravnava tako veljavne kot neveljavne vhodne podatke.
+
+Posebna pozornost sem namenila testiranju negativnih in robnih scenarijev (neobstoječi ID-ji), s čimer sem zagotovila stabilno in predvidljivo obnašanje sistema. Vsi testi so se uspešno izvedli brez napak, kar potrjuje pravilno delovanje bralnih in brisalnih operacij.
 
 ---
 
