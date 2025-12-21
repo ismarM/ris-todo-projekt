@@ -117,7 +117,9 @@ function App() {
         const dd = String(today.getDate()).padStart(2, "0");
         setNewDueDate(`${yyyy}-${mm}-${dd}`);
 
-        loadTasks();
+        // loadTasks();
+        await loadTasks();
+        await loadAnalytics();
     }
 
 // OZNAČI/ODOZNAČI
@@ -131,13 +133,17 @@ function App() {
             reminderEnabled: task.reminderEnabled ?? false,
             done: !task.done,
         });
-        loadTasks();
+        // loadTasks();
+        await loadTasks();
+        await loadAnalytics();
     }
 
 // BRIŠI
     async function deleteTask(id) {
         await api.delete(`/tasks/${id}`);
-        loadTasks();
+        // loadTasks();
+        await loadTasks();
+        await loadAnalytics();
     }
 
 // UREJANJE
@@ -180,7 +186,9 @@ function App() {
         });
 
         cancelEdit();
-        loadTasks();
+        // loadTasks();
+        await loadTasks();
+        await loadAnalytics();
     }
 
 // izračun tasksView
