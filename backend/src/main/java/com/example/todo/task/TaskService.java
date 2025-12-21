@@ -101,9 +101,46 @@ public class TaskService {
         }
     }
 
-    //PLACEHOLDER ZA ŽIVIN DEL
+    // Analitika produktivnosti
     public AnalitikaOpravil getAnalitika() {
-        return new AnalitikaOpravil();
+        List<Task> tasks = repository.findAll();
+
+        long skupno = tasks.size();
+
+        long dokoncanih = tasks.stream()
+                .filter(Task::isDone)
+                .count();
+
+        long nedokoncanih = skupno - dokoncanih;
+
+        LocalDate danes = LocalDate.now();
+
+        long zapadlih = tasks.stream()
+                .filter(t -> !t.isDone())
+                .filter(t -> t.getDueDate() != null)
+                .filter(t -> t.getDueDate().isBefore(danes))
+                .count();
+
+        double odstotekDokoncanih = (skupno == 0)
+                ? 0.0
+                : (dokoncanih * 100.0) / skupno;
+
+        // ZAČASNO PREVERJANJE
+        System.out.println(
+                "ANALITIKA -> skupno=" + skupno +
+                        ", dokoncanih=" + dokoncanih +
+                        ", nedokoncanih=" + nedokoncanih +
+                        ", zapadlih=" + zapadlih +
+                        ", odstotek=" + odstotekDokoncanih
+        );
+
+        return new AnalitikaOpravil(
+                skupno,
+                dokoncanih,
+                nedokoncanih,
+                zapadlih,
+                odstotekDokoncanih
+        );
     }
 
 }
