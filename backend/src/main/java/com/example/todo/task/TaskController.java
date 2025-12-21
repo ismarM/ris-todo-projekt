@@ -1,5 +1,6 @@
 package com.example.todo.task;
 
+import com.example.todo.task.dto.AnalitikaOpravil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,12 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         return ResponseEntity.ok(service.create(task));
+    }
+
+    //ANALITIKA
+    @GetMapping("/analytics")
+    public ResponseEntity<AnalitikaOpravil> analytics() {
+        return ResponseEntity.ok(service.getAnalitika());
     }
 
     // READ (all)
@@ -62,5 +69,7 @@ public class TaskController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
 
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.scheduling.annotation.Scheduled;
+import com.example.todo.task.dto.AnalitikaOpravil;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -98,6 +99,11 @@ public class TaskService {
 
             System.out.println("[REMINDER] Poslan opomnik na " + email + " za task " + t.getId());
         }
+    }
+
+    //PLACEHOLDER ZA ŽIVIN DEL
+    public AnalitikaOpravil getAnalitika() {
+        return new AnalitikaOpravil();
     }
 
 }

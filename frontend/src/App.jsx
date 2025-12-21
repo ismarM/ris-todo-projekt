@@ -23,6 +23,8 @@ function App() {
         return `${yyyy}-${mm}-${dd}`;
     });
 
+    const [analytics, setAnalytics] = useState(null);
+
     // helper za lep prikaz datuma
     function formatDate(d) {
         if (!d) return "";
@@ -79,6 +81,7 @@ function App() {
 // PREBERI VSE (ob zagonu)
     useEffect(() => {
         loadTasks();
+        loadAnalytics();
     }, [filterDate]);                                                             // filtriranje
 
     async function loadTasks() {
@@ -189,6 +192,17 @@ function App() {
             return new Date(a.dueDate) - new Date(b.dueDate);
         });
 
+    //API klic za analitiko
+    async function loadAnalytics() {
+    try {
+        const res = await api.get("/tasks/analytics");
+        setAnalytics(res.data);
+        console.log("Analytics:", res.data);
+    } catch (err) {
+        console.error("Napaka pri pridobivanju analitike:", err);
+    }
+}
+
 
     // JSX
     return (
@@ -256,6 +270,47 @@ function App() {
 
 
                 </div>
+
+                {analytics && (
+                    <div className="card analytics-card">
+                        <h2>Analitika produktivnosti</h2>
+
+                        <div className="analytics-grid">
+                            <div className="analytics-item">
+                                <span className="label">Skupno opravil</span>
+                                <span className="value">{analytics.skupnoStevilo}</span>
+                            </div>
+
+                            <div className="analytics-item">
+                                <span className="label">Dokončana</span>
+                                <span className="value done">
+                                    {analytics.steviloDokoncanih}
+                                </span>
+                            </div>
+
+                            <div className="analytics-item">
+                                <span className="label">Nedokončana</span>
+                                <span className="value">
+                                    {analytics.steviloNedokoncanih}
+                                </span>
+                            </div>
+
+                            <div className="analytics-item">
+                                <span className="label">Zapadla</span>
+                                <span className="value overdue">
+                                    {analytics.steviloZapadlih}
+                                </span>
+                            </div>
+
+                            <div className="analytics-item wide">
+                                <span className="label">Odstotek dokončanih</span>
+                                <span className="value percent">
+                                    {analytics.odstotekDokoncanih.toFixed(1)} %
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 <ul className="list">
                     {tasksView.length === 0 && <li className="empty">No tasks.</li>}
