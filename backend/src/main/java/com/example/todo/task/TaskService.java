@@ -6,15 +6,17 @@ Service sloj ni nujen, a je dobra praksa: controller samo “sprejme HTTP”, se
 Tukaj pripravimo čist CRUD tok: create(t), findAll(), findOne(id), update(id, payload), delete(id).
 */
 
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.stereotype.Service;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.scheduling.annotation.Scheduled;
-import com.example.todo.task.dto.AnalitikaOpravil;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import com.example.todo.task.dto.AnalitikaOpravil;
+import com.example.todo.task.dto.CalendarEventDTO;
 
 @EnableScheduling
 @Service
@@ -142,5 +144,44 @@ public class TaskService {
                 odstotekDokoncanih
         );
     }
+
+
+    public CalendarEventDTO syncTaskToCalendar(Long taskId) {
+
+        Task task = repository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found: " + taskId));
+
+        // validacija prej
+        if (task.getDueDate() == null) {
+            task.setCalendarSyncStatus(CalendarSyncStatus.ERROR);
+            repository.save(task);
+            throw new RuntimeException("Task has no dueDate, cannot sync to calendar.");
+        }
+
+        task.setCalendarSyncStatus(CalendarSyncStatus.IN_PROGRESS);
+        repository.save(task);
+
+        try {
+            CalendarEventDTO event = new CalendarEventDTO(
+                    task.getTitle(),
+                    task.getDueDate(),
+                    task.getDueDate(),
+                    task.getDescription()
+            );
+
+            System.out.println("[CALENDAR] Dogodek ustvarjen za task ID " + taskId);
+
+            task.setCalendarSyncStatus(CalendarSyncStatus.SUCCESS);
+            repository.save(task);
+
+            return event;
+
+        } catch (RuntimeException e) {
+            task.setCalendarSyncStatus(CalendarSyncStatus.ERROR);
+            repository.save(task);
+            throw e;
+        }
+    }
+
 
 }
