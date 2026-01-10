@@ -9,9 +9,17 @@ KLJUČNE STVARI:
     createdAt, updatedAt + @PreUpdate → preprosta časovna žiga
 */
 
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 @Entity                                                     // to pove, da je ta razred tabela
 @Table(name = "tasks")                                      // ime tabele (če nič nena napišem --> default: task - kot ime razreda)
@@ -31,6 +39,10 @@ public class Task {
     private String description;
 
     private LocalDate dueDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private CalendarSyncStatus calendarSyncStatus;
 
     @Column(length = 20)
     private String difficulty = "Medium";
@@ -113,6 +125,14 @@ public class Task {
     }
     public void setReminderSent(boolean reminderSent) {
         this.reminderSent = reminderSent;
+    }
+
+    public CalendarSyncStatus getCalendarSyncStatus() {
+        return calendarSyncStatus;
+    }
+
+    public void setCalendarSyncStatus(CalendarSyncStatus calendarSyncStatus) {
+        this.calendarSyncStatus = calendarSyncStatus;
     }
 
 
