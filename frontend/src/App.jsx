@@ -7,7 +7,7 @@ function App() {
     const [newTask, setNewTask] = useState("");
     const [newDesc, setNewDesc] = useState("");
     const [newDifficulty, setNewDifficulty] = useState("Medium");
-    const [syncedTasks, setSyncedTasks] = useState([]);
+    // const [syncedTasks, setSyncedTasks] = useState([]);
 
     const [newEmail, setNewEmail] = useState("");
     const [newReminderEnabled, setNewReminderEnabled] = useState(false);
@@ -149,16 +149,20 @@ function App() {
 
     async function syncToCalendar(taskId) {
         try {
-            const res = await api.post(`/tasks/${taskId}/calendar-sync`);
-            
-            // dodamo task med sinhronizirane
-            setSyncedTasks(prev => [...prev, taskId]);
-
-            alert("Sinhronizacija uspešna: " + res.data);
+          const res = await api.post(`/tasks/${taskId}/calendar-sync`);
+      
+          // po syncu reloadamo task-e, da dobimo calendarSyncStatus iz backenda
+          await loadTasks();
+      
+          // res.data je CalendarEventDTO (objekt), zato ga lepo prikažemo
+          alert(
+            `Sinhronizacija uspešna!`
+          );
         } catch (err) {
-            alert("Napaka pri sinhronizaciji");
+          await loadTasks(); // da se status ERROR pokaže, če ga backend nastavi
+          alert("Napaka pri sinhronizaciji (preveri, če ima task nastavljen dueDate).");
         }
-    }
+      }
 
 // UREJANJE
     // začni urejati
@@ -457,11 +461,17 @@ function App() {
                                                     <small>{task.description}</small>
                                                 </div>
                                             )}
-                                            {syncedTasks.includes(task.id) && (
-                                                <div>
-                                                    <small style={{ color: "green", fontWeight: "500" }}>
-                                                        Sinhronizirano s koledarjem
-                                                    </small>
+                                            {task.calendarSyncStatus && (
+                                                <div className="calendar-status">
+                                                    {task.calendarSyncStatus === "IN_PROGRESS" && (
+                                                        <span className="calendar-badge in-progress">🟡 V TEKU</span>
+                                                    )}
+                                                    {task.calendarSyncStatus === "SUCCESS" && (
+                                                        <span className="calendar-badge success">✅ USPEŠNO</span>
+                                                    )}
+                                                    {task.calendarSyncStatus === "ERROR" && (
+                                                        <span className="calendar-badge error">❌ NAPAKA</span>
+                                                    )}
                                                 </div>
                                             )}
                                             </div>

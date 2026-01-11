@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.todo.task.dto.AnalitikaOpravil;
 import com.example.todo.task.dto.CalendarEventDTO;
+import com.example.todo.task.CalendarSyncStatus;
 
 @EnableScheduling
 @Service
@@ -155,6 +156,7 @@ public class TaskService {
         if (task.getDueDate() == null) {
             task.setCalendarSyncStatus(CalendarSyncStatus.ERROR);
             repository.save(task);
+            System.out.println("[CALENDAR] ERROR - task nima dueDate, ID=" + taskId);
             throw new RuntimeException("Task has no dueDate, cannot sync to calendar.");
         }
 
@@ -179,6 +181,7 @@ public class TaskService {
         } catch (RuntimeException e) {
             task.setCalendarSyncStatus(CalendarSyncStatus.ERROR);
             repository.save(task);
+            System.out.println("[CALENDAR] ERROR - izjema pri sync za task ID=" + taskId);
             throw e;
         }
     }

@@ -72,10 +72,10 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/calendar-sync")
-    public ResponseEntity<CalendarSyncStatus> syncTaskToCalendar(@PathVariable Long id) {
-        service.syncTaskToCalendar(id);
-        return ResponseEntity.ok(CalendarSyncStatus.SUCCESS);
+    public ResponseEntity<?> syncTaskToCalendar(@PathVariable Long id) {
+        return ResponseEntity.ok(service.syncTaskToCalendar(id)); // vrne CalendarEventDTO
     }
+
 
 
 
