@@ -1,6 +1,7 @@
 package com.example.todo.task;
 
 import com.example.todo.task.dto.AnalitikaOpravil;
+import com.example.todo.task.CalendarSyncStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,6 +69,12 @@ public class TaskController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/calendar-sync")
+    public ResponseEntity<CalendarSyncStatus> syncTaskToCalendar(@PathVariable Long id) {
+        service.syncTaskToCalendar(id);
+        return ResponseEntity.ok(CalendarSyncStatus.SUCCESS);
     }
 
 

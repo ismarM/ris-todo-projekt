@@ -7,6 +7,7 @@ function App() {
     const [newTask, setNewTask] = useState("");
     const [newDesc, setNewDesc] = useState("");
     const [newDifficulty, setNewDifficulty] = useState("Medium");
+    const [syncedTasks, setSyncedTasks] = useState([]);
 
     const [newEmail, setNewEmail] = useState("");
     const [newReminderEnabled, setNewReminderEnabled] = useState(false);
@@ -144,6 +145,19 @@ function App() {
         // loadTasks();
         await loadTasks();
         await loadAnalytics();
+    }
+
+    async function syncToCalendar(taskId) {
+        try {
+            const res = await api.post(`/tasks/${taskId}/calendar-sync`);
+            
+            // dodamo task med sinhronizirane
+            setSyncedTasks(prev => [...prev, taskId]);
+
+            alert("Sinhronizacija uspešna: " + res.data);
+        } catch (err) {
+            alert("Napaka pri sinhronizaciji");
+        }
     }
 
 // UREJANJE
@@ -443,6 +457,13 @@ function App() {
                                                     <small>{task.description}</small>
                                                 </div>
                                             )}
+                                            {syncedTasks.includes(task.id) && (
+                                                <div>
+                                                    <small style={{ color: "green", fontWeight: "500" }}>
+                                                        Sinhronizirano s koledarjem
+                                                    </small>
+                                                </div>
+                                            )}
                                             </div>
 
                                     </div>
@@ -451,6 +472,7 @@ function App() {
                                 <div className="action-buttons">
                                     <button className="btn ghost" onClick={() => startEdit(task)}>Edit</button>
                                     <button className="btn ghost" onClick={() => deleteTask(task.id)}>Delete</button>
+                                    <button className="btn ghost" onClick={() => syncToCalendar(task.id)}>Sync to calendar</button>
                                 </div>
                             </li>
                         );
