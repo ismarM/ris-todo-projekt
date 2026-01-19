@@ -56,6 +56,10 @@ public class Task {
     @Column(nullable = false)
     private boolean reminderSent = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private RecurrenceType recurrenceType = RecurrenceType.NONE;
+
     @PrePersist
     public void onCreate() {
         if (difficulty == null || difficulty.isBlank()) {
@@ -125,6 +129,12 @@ public class Task {
     }
     public void setReminderSent(boolean reminderSent) {
         this.reminderSent = reminderSent;
+    }
+    public RecurrenceType getRecurrenceType() {
+        return recurrenceType;
+    }
+    public void setRecurrenceType(RecurrenceType recurrenceType) {
+        this.recurrenceType = recurrenceType;
     }
 
     public CalendarSyncStatus getCalendarSyncStatus() {

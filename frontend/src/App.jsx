@@ -14,6 +14,10 @@ function App() {
     const [editEmail, setEditEmail] = useState("");
     const [editReminderEnabled, setEditReminderEnabled] = useState(false);
 
+    const [newRecurrenceType, setNewRecurrenceType] = useState("NONE");
+
+
+
     // const [newDueDate, setNewDueDate] = useState("");
     // ob zagonu aplikacije input type="date" že imel današnji datum
     const [newDueDate, setNewDueDate] = useState(() => {
@@ -77,6 +81,7 @@ function App() {
     const [editDesc, setEditDesc] = useState("");
     const [editDueDate, setEditDueDate] = useState("");
     const [editDifficulty, setEditDifficulty] = useState("Medium");
+    const [editRecurrenceType, setEditRecurrenceType] = useState("NONE");
 
 
 // PREBERI VSE (ob zagonu)
@@ -103,6 +108,7 @@ function App() {
             difficulty: newDifficulty,
             email: newEmail || null,
             reminderEnabled: newReminderEnabled,
+            recurrenceType: newRecurrenceType,
             done: false,
         });
 
@@ -112,6 +118,8 @@ function App() {
         setNewDifficulty("Medium");
         setNewEmail("");
         setNewReminderEnabled(false);
+        setNewRecurrenceType("NONE");
+
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, "0");
@@ -132,6 +140,7 @@ function App() {
             difficulty: task.difficulty ?? "Medium",
             email: task.email ?? null,
             reminderEnabled: task.reminderEnabled ?? false,
+            recurrenceType: task.recurrenceType ?? "NONE",
             done: !task.done,
         });
         // loadTasks();
@@ -174,6 +183,7 @@ function App() {
         setEditDifficulty(task.difficulty || "Medium")
         setEditEmail(task.email || "");
         setEditReminderEnabled(task.reminderEnabled ?? false);
+        setEditRecurrenceType(task.recurrenceType ?? "NONE");
         console.log("task.difficulty = ", task.difficulty);
     }
 
@@ -186,6 +196,7 @@ function App() {
         setEditDifficulty("Medium");
         setEditEmail("");
         setEditReminderEnabled(false);
+        setEditRecurrenceType("NONE");
     }
 
     // shrani (PUT) – posodobimo samo title, ostalo nespremenjeno
@@ -200,6 +211,7 @@ function App() {
             email: editEmail || null,
             reminderEnabled: editReminderEnabled,
             difficulty: editDifficulty,
+            recurrenceType: editRecurrenceType,
             done: task.done,
         });
 
@@ -234,51 +246,88 @@ function App() {
     return (
         <div className="page">
             <div className="card">
-                <h1>To-Do:</h1>
+            {/* HEADER */}
+            <div className="header">
+                <div>
+                    <h1 className="title">To-Do</h1>
+                    <p className="subtitle">
+                        Uredi opravila, ponovitve in roke na enem mestu.
+                    </p>
+                </div>
+            </div>
 
-                <div className="add-row">
-                    <input
+            {/* LAYOUT: LEVO + DESNO */}
+            <div className="layout">
+                {/* LEVO – NOVO OPRAVILO */}
+                <div className="panel">
+                    <div className="panel-title">Novo opravilo</div>
+
+                    <div className="add-row">
+                        <input
                         type="text"
                         placeholder="Vpiši opravilo..."
                         value={newTask}
                         onChange={(e) => setNewTask(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && addTask()}
-                    />
-                    <textarea
+                        />
+
+                        <textarea
                         placeholder="Opis opravila..."
                         value={newDesc}
                         onChange={(e) => setNewDesc(e.target.value)}
-                    />
-                    <input
+                        />
+
+                        <input
                         type="email"
                         placeholder="E-pošta za opomnik (neobvezno)"
                         value={newEmail}
                         onChange={(e) => setNewEmail(e.target.value)}
-                    />
-                    <label className="reminder-row">
+                        />
+
+                        <label className="reminder-row">
                         <input
                             type="checkbox"
                             checked={newReminderEnabled}
                             onChange={(e) => setNewReminderEnabled(e.target.checked)}
                         />
                         <span>Pošlji opomnik dan pred rokom</span>
-                    </label>
-                    <input
+                        </label>
+
+                        <input
                         type="date"
                         value={newDueDate}
                         onChange={(e) => setNewDueDate(e.target.value)}
-                    />
-                    <select
+                        />
+
+                        <select
                         value={newDifficulty}
                         onChange={(e) => setNewDifficulty(e.target.value)}
-                    >
+                        >
                         <option value="Low">Low</option>
                         <option value="Medium">Medium</option>
                         <option value="High">High</option>
-                    </select>
-                    <button className="btn primary" onClick={addTask} disabled={!newTask.trim()}>Add</button>
+                        </select>
 
+                        <select
+                        value={newRecurrenceType}
+                        onChange={(e) => setNewRecurrenceType(e.target.value)}
+                        >
+                        <option value="NONE">Brez ponavljanja</option>
+                        <option value="DAILY">Dnevno</option>
+                        <option value="WEEKLY">Tedensko</option>
+                        <option value="MONTHLY">Mesečno</option>
+                        </select>
 
+                        <button
+                        className="btn primary"
+                        onClick={addTask}
+                        disabled={!newTask.trim()}
+                        >
+                        Add
+                        </button>
+
+                        
+                    </div>
                     {/* FILTRIRANJE */}
                     <div className="filter-row">
                         <label>Filtriraj po datumu:&nbsp;</label>
@@ -288,55 +337,64 @@ function App() {
                             onChange={(e) => setFilterDate(e.target.value)}
                         />
                         {filterDate && (
-                            <button className="btn ghost sm" onClick={() => setFilterDate("")}>
-                                Show all
+                            <button
+                            className="btn ghost sm"
+                            onClick={() => setFilterDate("")}
+                            >
+                            Show all
                             </button>
                         )}
                     </div>
-
-
                 </div>
 
+                {/* DESNO – PREGLED / ANALITIKA */}
+                <div className="panel">
+                <div className="panel-title">Pregled</div>
+
                 {analytics && (
-                    <div className="card analytics-card">
-                        <h2>Analitika produktivnosti</h2>
+                    <div className="analytics-card">
+                    <h2>Analitika produktivnosti</h2>
 
-                        <div className="analytics-grid">
-                            <div className="analytics-item">
-                                <span className="label">Skupno opravil</span>
-                                <span className="value">{analytics.skupnoStevilo}</span>
-                            </div>
+                    <div className="analytics-grid">
+                        <div className="analytics-item">
+                        <span className="label">Skupno opravil</span>
+                        <span className="value">{analytics.skupnoStevilo}</span>
+                        </div>
 
-                            <div className="analytics-item">
-                                <span className="label">Dokončana</span>
-                                <span className="value done">
-                                    {analytics.steviloDokoncanih}
-                                </span>
-                            </div>
+                        <div className="analytics-item">
+                        <span className="label">Dokončana</span>
+                        <span className="value done">
+                            {analytics.steviloDokoncanih}
+                        </span>
+                        </div>
 
-                            <div className="analytics-item">
-                                <span className="label">Nedokončana</span>
-                                <span className="value">
-                                    {analytics.steviloNedokoncanih}
-                                </span>
-                            </div>
+                        <div className="analytics-item">
+                        <span className="label">Nedokončana</span>
+                        <span className="value">
+                            {analytics.steviloNedokoncanih}
+                        </span>
+                        </div>
 
-                            <div className="analytics-item">
-                                <span className="label">Zapadla</span>
-                                <span className="value overdue">
-                                    {analytics.steviloZapadlih}
-                                </span>
-                            </div>
+                        <div className="analytics-item">
+                        <span className="label">Zapadla</span>
+                        <span className="value overdue">
+                            {analytics.steviloZapadlih}
+                        </span>
+                        </div>
 
-                            <div className="analytics-item wide">
-                                <span className="label">Odstotek dokončanih</span>
-                                <span className="value percent">
-                                    {analytics.odstotekDokoncanih.toFixed(1)} %
-                                </span>
-                            </div>
+                        <div className="analytics-item wide">
+                        <span className="label">Odstotek dokončanih</span>
+                        <span className="value percent">
+                            {analytics.odstotekDokoncanih.toFixed(1)} %
+                        </span>
                         </div>
                     </div>
+                    </div>
                 )}
+                </div>
+            </div>
+
+                
 
                 <ul className="list">
                     {tasksView.length === 0 && <li className="empty">No tasks.</li>}
@@ -372,6 +430,16 @@ function App() {
                                                 <option value="Medium">Medium</option>
                                                 <option value="High">High</option>
                                             </select>
+                                            <select
+                                                value={editRecurrenceType}
+                                                onChange={(e) => setEditRecurrenceType(e.target.value)}
+                                            >
+                                                <option value="NONE">Brez ponavljanja</option>
+                                                <option value="DAILY">Dnevno</option>
+                                                <option value="WEEKLY">Tedensko</option>
+                                                <option value="MONTHLY">Mesečno</option>
+                                            </select>
+
                                             <input
                                                 type="email"
                                                 value={editEmail}
@@ -401,7 +469,18 @@ function App() {
 
                         // če task ni v načinu urejanja ----------------------------------------------------------------
                         return (
-                            <li key={task.id} className="item">
+                            <li
+                                key={task.id}
+                                className={`item ${
+                                    task.recurrenceType === "DAILY"
+                                    ? "daily"
+                                    : task.recurrenceType === "WEEKLY"
+                                    ? "weekly"
+                                    : task.recurrenceType === "MONTHLY"
+                                    ? "monthly"
+                                    : ""
+                                }`}
+                            >
                                 <div className="left">
                                     <input
                                         type="checkbox"
@@ -429,6 +508,24 @@ function App() {
                                                     </span>
                                                 );
                                                 })()}
+
+                                                {task.recurrenceType && task.recurrenceType !== "NONE" && (
+                                                    <span
+                                                        className={`recurrence-badge ${
+                                                        task.recurrenceType === "DAILY"
+                                                            ? "recurrence-daily"
+                                                            : task.recurrenceType === "WEEKLY"
+                                                            ? "recurrence-weekly"
+                                                            : "recurrence-monthly"
+                                                        }`}
+                                                    >
+                                                        🔁 {task.recurrenceType === "DAILY"
+                                                        ? "Dnevno"
+                                                        : task.recurrenceType === "WEEKLY"
+                                                        ? "Tedensko"
+                                                        : "Mesečno"}
+                                                    </span>
+                                                )}
 
                                                 {task.dueDate && !task.done && (() => {
                                                 const info = daysLeft(task.dueDate);
@@ -481,7 +578,7 @@ function App() {
 
                                 <div className="action-buttons">
                                     <button className="btn ghost" onClick={() => startEdit(task)}>Edit</button>
-                                    <button className="btn ghost" onClick={() => deleteTask(task.id)}>Delete</button>
+                                    <button className="btn danger" onClick={() => deleteTask(task.id)}>Delete</button>
                                     <button className="btn ghost" onClick={() => syncToCalendar(task.id)}>Sync to calendar</button>
                                 </div>
                             </li>

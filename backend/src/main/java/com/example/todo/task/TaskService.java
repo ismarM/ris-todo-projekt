@@ -51,9 +51,13 @@ public class TaskService {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("Task not found " + id));
     }
 
+
     // UPDATE
     public Task update(Long id, Task updatedTask) {
-        Task t = findOne(id);                               // stari task v bazi - najdemo ga po id
+        Task t = findOne(id);
+
+        boolean wasDone = t.isDone();
+
         t.setTitle(updatedTask.getTitle());
         t.setDone(updatedTask.isDone());
         t.setDescription(updatedTask.getDescription());
@@ -61,7 +65,55 @@ public class TaskService {
         t.setDifficulty(updatedTask.getDifficulty());
         t.setEmail(updatedTask.getEmail());
         t.setReminderEnabled(updatedTask.isReminderEnabled());
-        return repository.save(t);                          // shranijo spremembe v bazo
+        t.setRecurrenceType(updatedTask.getRecurrenceType());
+
+        // 1) Shrani posodobitev trenutne naloge
+        Task saved = repository.save(t);
+
+        // 2) Če je prehod iz NOT DONE -> DONE in ima ponavljanje, naredi novo nalogo
+        boolean becameDone = !wasDone && saved.isDone();
+
+        if (becameDone
+                && saved.getRecurrenceType() != null
+                && saved.getRecurrenceType() != RecurrenceType.NONE
+                && saved.getDueDate() != null) {
+
+            // izračunaj CATCH-UP datum
+            LocalDate nextDue = calculateNextFutureDueDate(
+                    saved.getDueDate(),
+                    saved.getRecurrenceType()
+            );
+
+            Task next = new Task();
+            next.setTitle(saved.getTitle());
+            next.setDescription(saved.getDescription());
+            next.setDifficulty(saved.getDifficulty());
+            next.setDueDate(nextDue);
+            next.setDone(false);
+
+            // opomniki
+            next.setEmail(saved.getEmail());
+            next.setReminderEnabled(saved.isReminderEnabled());
+            next.setReminderSent(false);
+
+            // ponavljanje ostane
+            next.setRecurrenceType(saved.getRecurrenceType());
+
+            // koledar reset
+            next.setCalendarSyncStatus(null);
+
+            // 1️⃣ izbriši staro nalogo
+            repository.deleteById(saved.getId());
+
+            // 2️⃣ shrani novo nalogo
+            repository.save(next);
+
+            System.out.println("[RECURRING] Stara naloga izbrisana, ustvarjena nova z datumom " + nextDue);
+
+            return next; // zelo pomembno
+        }
+
+        return saved;
     }
 
     // DELETE
@@ -146,7 +198,7 @@ public class TaskService {
         );
     }
 
-
+    // CALENDAR SYNC
     public CalendarEventDTO syncTaskToCalendar(Long taskId) {
 
         Task task = repository.findById(taskId)
@@ -184,6 +236,23 @@ public class TaskService {
             System.out.println("[CALENDAR] ERROR - izjema pri sync za task ID=" + taskId);
             throw e;
         }
+    }
+
+    // vrne prihodnji datum
+    private LocalDate calculateNextFutureDueDate(LocalDate dueDate, RecurrenceType type) {
+        LocalDate next = dueDate;
+        LocalDate today = LocalDate.now();
+
+        while (!next.isAfter(today)) {
+            next = switch (type)  {
+                case DAILY -> next.plusDays(1);
+                case WEEKLY -> next.plusWeeks(1);
+                case MONTHLY -> next.plusMonths(1);
+                case NONE -> next;
+            };
+        }
+
+        return next;
     }
 
 
